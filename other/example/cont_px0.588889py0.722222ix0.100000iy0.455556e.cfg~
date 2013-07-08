@@ -1,0 +1,24 @@
+meshfile = cont_px0.588889py0.722222ix0.100000iy0.455556e.1.amdba
+result_prefix = cont_px0.588889py0.722222ix0.100000iy0.455556e
+
+Rinje = 0.01
+K_ext    =  0.0                       
+p_ext    =  0.0                       
+k_p      = 1.0                        
+mu1      = 1.0                        
+mu2      = 1.0                        
+p0       = 0.0                        
+u_in     = -1.0                       
+e_g      = 0.0                        
+
+dt         = 0.0025                
+MAXTIME    = 6362                  
+visu_step  = 7000
+init_alpha = 0                     
+make_coort.mat    	= FALSE
+make_coorp.mat          = FALSE
+make_alpha_out.mat      = FALSE
+make_frac.mat		= TRUE
+make_result.mat		= FALSE
+production_log		= FALSE
+    
