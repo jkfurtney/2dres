@@ -1,13 +1,13 @@
 /**********************************************************************
- *                                                                    * 
- * File Name: ConjGrad.hh                                             *  
+ *                                                                    *
+ * File Name: ConjGrad.hh                                             *
  *                                                                    *
  * Class Name: ConjGrad                                               *
  *                                                                    *
- * Goal: This a conjugate gradient with incomplete Cholesky           * 
+ * Goal: This a conjugate gradient with incomplete Cholesky           *
  *       preconditioner for sparse matrix                             *
  *                                                                    *
- * Solve A*x=b with A[Nt][3][3] the local matrix                      *  
+ * Solve A*x=b with A[Nt][3][3] the local matrix                      *
  *                                                                    *
  * Coort[Nt][3] has values between 0 and N-1, gives                   *
  *  the 3 vertices or the 3 nodes of each triangle                    *
@@ -27,10 +27,10 @@
  *                                                                    *
  * If the code crashes, first increase Nterm                          *
  * This is the maximum number of non-0 values for a row               *
- * of the sparse matrix A                                             * 
+ * of the sparse matrix A                                             *
  *                                                                    *
  * Copyright (C) 04/2002  Arthur Moncorge                             *
- *                        arthur.moncorge@ensta.org                   * 
+ *                        arthur.moncorge@ensta.org                   *
  *                        from Mats Nigam's Fortran code              *
  *                                                                    *
  * This program is free software; you can redistribute it and/or      *
@@ -39,7 +39,7 @@
  * of the License, or (at your option) any later version.             *
  *                                                                    *
  * This program is distributed in the hope that it will be useful,    *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of     *      
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of     *
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the      *
  * GNU General Public License for more details.                       *
  *                                                                    *
@@ -53,37 +53,37 @@
 #ifndef _CLASS_CONJGRAD_HH_
 #define _CLASS_CONJGRAD_HH_
 
-#include<iostream.h>
+#include<iostream>
 #include<math.h>
 #include"mylibrary.hh"
 #include<stdio.h>
-
+using namespace std;
 class ConjGrad
 {
-  
+
 public:
-  
+
   ConjGrad()
   {
     cout << "Class Conjugate Gradient" << endl;
   }
-  
+
   ~ConjGrad()
   {
     int i,j;
-    
+
     cout << "Destructor ConjGrad" << endl;
     delete[] r;
     delete[] w;
     delete[] Aw;
     delete[] q;
-    
+
     for (i=0; i<N; i++)
       {
-	delete []  Aspar[i];
-	delete []   chol[i];
-	delete []  cholt[i];
-	delete [] indexA[i];
+        delete []  Aspar[i];
+        delete []   chol[i];
+        delete []  cholt[i];
+        delete [] indexA[i];
       }
     delete []   Aspar;
     delete []    chol;
@@ -92,27 +92,27 @@ public:
     delete [] rowsize;
     delete []    diag;
   }
-  
+
   void init(int iN, int iNt, double itol, int** iCoort);
   int solve(double*** A, double* b, int* mask, double* x);
-  
+
   void sparceA(double*** A, double** Aspar, int** indexA, int* diag, int* rowsize);
-  void cholesky_fact(double** Aspar, int** indexA, int* diag, 
-		     double** chol, double** cholt);
-  void lower(int N, int* diag, int** indexA, 
-	     double** chol, double* b, double* x);
+  void cholesky_fact(double** Aspar, int** indexA, int* diag,
+                     double** chol, double** cholt);
+  void lower(int N, int* diag, int** indexA,
+             double** chol, double* b, double* x);
   void upper(int N, int* diag, int** indexA, int* rowsize,
-	     double** cholt, double* b, double* x);
-    
+             double** cholt, double* b, double* x);
+
 public:
-  
+
   // Constants
   double tol;
   int N;
   int Nt;
-  
+
   int** Coort;
-  
+
   // private
 
   // Working arrays
@@ -120,7 +120,7 @@ public:
   double* w;
   double* Aw;
   double* q;
-  
+
   /* For the incomplete Cholesky preconditionner */
   int Nterm; //=10;
   double** Aspar;
@@ -133,13 +133,3 @@ public:
 
 
 #endif  // End of _CLASS_CONJGRAD_HH_
-
-
-
-
-
-
-
-
-
-

@@ -1,8 +1,9 @@
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
+
 #include "Prog.hh"
 
-extern "C" {  
+extern "C" {
   /* cfp is a configuration parsing module it is writen in c
      and needs to be declared as extern "C" as below
      for more information on cfp see cfp/cfp.h
@@ -14,14 +15,14 @@ main(int argc, char *argv[]) {
   int info = 0;
   cfpObject c = cfpNew(1);
   struct Prog::prog_arg prog_val;
-  
+
   if (argc != 2) {
     cout << " You must provide 1 commandline argument which is the name of the configuration file for this run " << endl;
     exit (1);
-  }  
-  
+  }
+
   if (0 == cfpParseFile(c, argv[1])) {
-    cerr << "error opening file: " << argv[1] << " exiting..." << endl; 
+    cerr << "error opening file: " << argv[1] << " exiting..." << endl;
     exit(1);
   }
 
@@ -38,7 +39,7 @@ main(int argc, char *argv[]) {
     cout << endl;
     cout << "1) Conservation of injected fluid mass" << endl;
     cout << "d(alpha)/dt + div(alpha*u) = 0" << endl;
-    cout << endl; 
+    cout << endl;
     cout << "2) Darcy's Law" << endl;
     cout << "(mu/k)*u = -grad(p) - B*alpha*e_y" << endl;
     cout << "with e_y normal vector in the y direction  " << endl;
@@ -54,7 +55,7 @@ main(int argc, char *argv[]) {
     cout << endl;
     exit(0);
   }
-  
+
   prog_val.meshfile           = cfpGetString(c, "meshfile");
   prog_val.Rinje              = cfpGetDouble(c, "Rinje");
   prog_val.K_ext              = cfpGetDouble(c, "K_ext");
@@ -74,22 +75,10 @@ main(int argc, char *argv[]) {
   prog_val.alpha_out          = cfpGetBoolean(c, "make_alpha_out.mat");
   prog_val.fracmat            = cfpGetBoolean(c, "make_frac.mat");
   prog_val.result             = cfpGetBoolean(c, "make_result.mat");
-  prog_val.production_log     = cfpGetBoolean(c, "production_log");  
-  prog_val.result_prefix      = cfpGetString(c, "result_prefix");  
-  
+  prog_val.production_log     = cfpGetBoolean(c, "production_log");
+  prog_val.result_prefix      = cfpGetString(c, "result_prefix");
+
   cfpDelete(c);
   Prog program(prog_val);
   program.compute();
 }
-
-
-
-
-
-
-
-
-
-
-
-
