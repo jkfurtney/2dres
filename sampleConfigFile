@@ -1,0 +1,40 @@
+/* this is a sample configuration file for 2dres a 2d reservoir simulator
+   with some default values   
+
+*/
+
+# data about the mesh
+meshfile = MESH/magnus2inj.amdba      /* Mesh File to read */
+Rinje    = 0.01                       /* Radius of the injector */
+
+#leak information
+K_ext    =  0.0                       /* Leak coefficient */
+p_ext    =  0.0                       /* Exterior pressure */  
+
+# run parameters
+k_p      = 1.0                        /* permeability */
+mu1      = 1.0                        /* viscosity fluid alpha=1 (injection) */
+mu2      = 1.0                        /* viscosity fluid alpha=0 (reservoir) */
+p0       = 0.0                        /* pressure at producer */
+u_in     = -1.0                       /*  velocity injection */
+e_g      = 0.0                        /* gravity parameter B */
+
+# time information
+dt         = 0.0025                   /* time step */
+MAXTIME    = 2000                     /* number of time steps */
+visu_step  = 20
+init_alpha = 0                       /* get initial alpha values
+                                        from file alpha_in.ma */
+
+/* visualization options */
+
+result_prefix = run_name            /* this string is added to the 
+					beginning of the output files */
+	
+make_coort.mat    	= FALSE
+make_coorp.mat          = FALSE
+make_alpha_out.mat      = TRUE
+make_frac.mat		= TRUE
+make_result.mat		= TRUE
+
+production_log		= TRUE
