@@ -348,7 +348,7 @@ void MixHy::createb(double* alpha, double** g, double* b)
       for (i=0; i<3; i++)
         {
           Ref=T_edge[l][i]->Ref;
-
+          double length = T_edge[l][i]->length;
           if ( Ref != NORMAL )
             {
               if ( Ref==BORDER ||  Ref==PRODUCER )
@@ -361,7 +361,8 @@ void MixHy::createb(double* alpha, double** g, double* b)
                     {
                       /* We have -flux because we take - the equation
                          to have a finite POSITIVE matrix             */
-                      b[ Coore[l][i] ] += -flux_in/segINJE;
+                      b[ Coore[l][i] ] += -flux_in * length;
+                      printf("setting flux at %i %i to %lf\n", l, i, -flux_in * length);
                     }
                   else
                     {
