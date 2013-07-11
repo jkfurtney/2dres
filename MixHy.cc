@@ -362,7 +362,7 @@ void MixHy::createb(double* alpha, double** g, double* b)
                       /* We have -flux because we take - the equation
                          to have a finite POSITIVE matrix             */
                       b[ Coore[l][i] ] += -flux_in * length;
-                      printf("setting flux at %i %i to %lf\n", l, i, -flux_in * length);
+                      //printf("setting flux at %i %i to %lf\n", l, i, -flux_in * length);
                     }
                   else
                     {
