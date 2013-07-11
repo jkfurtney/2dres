@@ -52,6 +52,12 @@ Visu::Visu(struct visu_arg visu_val)
 
   alpha_node = new double[Np];
   press_node = new double[Np];
+  arrival_state = new bool[Np];
+  arrival_time = new double[Np];
+  for (int i=0; i<Np; i++)
+  {
+    arrival_time[i] = 1e300;
+  }
 }
 
 
@@ -60,8 +66,49 @@ Visu::~Visu()
   cout << "Destructor Visu" << endl;
   delete[] alpha_node;
   delete[] press_node;
+  delete[] arrival_state;
+  delete[] arrival_time;
 }
 
+void Visu::update_arival_time(const double *alpha, const double &time)
+{
+  memset(alpha_node, 0, Np*sizeof(double));
+  for (int l=0; l<Nt; l++)
+  {
+    for (int i=0; i<3; i++)
+    {
+      int node = Coort[3*l+i];
+      alpha_node[node] += Ihat[l][i]*alpha[l]/SumMass[node];
+    }
+  }
+
+  for (int n=0; n<Np; n++)
+  {
+    if (! arrival_state[n])
+    {
+      if (alpha_node[n] > 0.4)
+      {
+        arrival_state[n]=true;
+        arrival_time[n]=time;
+      }
+    }
+  }
+}
+
+void Visu::write_arrival_time(const char* result_prefix)
+{
+  FILE *file;
+  char arrival_outname[128];
+
+  strcpy(arrival_outname, result_prefix);
+  strcat(arrival_outname, "_arrival_time.mat");
+  file=fopen(arrival_outname ,"w");
+  for (int i=0; i<Np; i++)
+  {
+    fprintf(file, "%g\n", arrival_time[i]);
+  }
+  fclose(file);
+}
 
 void Visu::update(double* pressure, double* alpha, int counter) {
   FILE* file;

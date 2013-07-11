@@ -65,6 +65,8 @@ public:
   Visu(struct visu_arg visu_val);
   ~Visu();
   void update(double* pressure, double* alpha, int counter);
+  void update_arival_time(const double *alpha, const double &time);
+  void write_arrival_time(const char *filename);
 
 public:
   int   Nt;
@@ -91,6 +93,10 @@ public:
   char *coorpname;
   char *fracname;
   char *resultname;
+
+  bool *arrival_state;
+  double *arrival_time;
+
 };
 
 
