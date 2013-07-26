@@ -234,7 +234,7 @@ void IterAlph::create_alphaflux(double** alpha, double** flux,
   int k=0;
   int seg=0;
   int kseg=0;
-  double fluxINJ=flux_in/segINJE;
+
   int Ref=0;
   int tri=0;
 
@@ -242,9 +242,11 @@ void IterAlph::create_alphaflux(double** alpha, double** flux,
     memset(alpha_flux[l], 0, 3*sizeof(double));
     for (seg=0; seg<3; seg++) {
       Ref=T_edge[l][seg]->Ref;
+      double length = T_edge[l][seg]->length;
+      double fluxINJ = flux_in * length;
       if (Ref!=NORMAL && Ref!=LEAK) {
         if (Ref==INJECTOR) {
-          // new fluid comeing in from the injector
+          // new fluid coming in from the injector
           alpha_flux[l][seg]=(1.0-inject0_1)*fluxINJ;
         }
         else if (Ref==PRODUCER) {

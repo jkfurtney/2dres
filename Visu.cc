@@ -72,6 +72,7 @@ Visu::~Visu()
 
 void Visu::update_arival_time(const double *alpha, const double &time)
 {
+  double max_alpha = 0.0;
   memset(alpha_node, 0, Np*sizeof(double));
   for (int l=0; l<Nt; l++)
   {
@@ -79,14 +80,16 @@ void Visu::update_arival_time(const double *alpha, const double &time)
     {
       int node = Coort[3*l+i];
       alpha_node[node] += Ihat[l][i]*alpha[l]/SumMass[node];
+      max_alpha = max(alpha_node[node], max_alpha);
     }
   }
+  //cout << "\n -------- max alpha " << max_alpha << endl;
 
   for (int n=0; n<Np; n++)
   {
     if (! arrival_state[n])
     {
-      if (alpha_node[n] > 0.4)
+      if (alpha_node[n] > 0.5)
       {
         arrival_state[n]=true;
         arrival_time[n]=time;
