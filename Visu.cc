@@ -98,6 +98,34 @@ void Visu::update_arival_time(const double *alpha, const double &time)
   }
 }
 
+void Visu::write_well_flux(const char *result_prefix, double **flux,
+                     struct Mesh::Edge*** T_edge)
+{
+  FILE *file;
+  char flux_outname[128];
+
+  strcpy(flux_outname, result_prefix);
+  strcat(flux_outname, "_well_flux.mat");
+  file=fopen(flux_outname, "w");
+  for (int i=0; i<Nt; i++)
+  {
+    for (int j=0; j<3; j++)
+    {
+      if (T_edge[i][j]->Ref==PRODUCER)
+      {
+        int vert_id1 = T_edge[i][j]->vertex1;
+        int vert_id2 = T_edge[i][j]->vertex2;
+        double x =  Coorp[2*vert_id1];
+        double y =  Coorp[2*vert_id1+1];
+        fprintf(file, "%i %i %i %g %g %g\n", i, vert_id1, vert_id2,
+                x, y, flux[i][j]);
+      }
+    }
+  }
+  fclose(file);
+}
+
+
 void Visu::write_arrival_time(const char* result_prefix)
 {
   FILE *file;

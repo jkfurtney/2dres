@@ -33,7 +33,7 @@
 #include "stdio.h"
 #include <string.h>
 #include "mylibrary.hh"
-
+#include "Mesh.hh"
 
 
 
@@ -67,6 +67,9 @@ public:
   void update(double* pressure, double* alpha, int counter);
   void update_arival_time(const double *alpha, const double &time);
   void write_arrival_time(const char *filename);
+  void write_well_flux(const char *filename, double **flux,
+                       struct Mesh::Edge*** T_edge);
+
 
 public:
   int   Nt;

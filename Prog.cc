@@ -228,6 +228,7 @@ void Prog::compute() {
   // final write to flood ammount
   visu.update(pressure, alpha, t-1);
   visu.write_arrival_time(result_prefix);
+  visu.write_well_flux(result_prefix, flux,T_edge);
   /* Free memory */
   cout << "Computation Finished" << endl;
 }
