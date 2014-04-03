@@ -208,7 +208,7 @@ void Prog::compute() {
     advect.iteration_alpha(flux, alpha);
     cout << "iteration_alpha t=" << t << endl;
 
-    visu.update_arival_time(alpha, t*dt);
+    //visu.update_arival_time(alpha, t*dt);
 
     if (alpha_out) {
       // save alpha on triangles after each time step
@@ -227,8 +227,8 @@ void Prog::compute() {
 
   // final write to flood ammount
   visu.update(pressure, alpha, t-1);
-  visu.write_arrival_time(result_prefix);
-  visu.write_well_flux(result_prefix, flux,T_edge);
+  //visu.write_arrival_time(result_prefix);
+  //visu.write_well_flux(result_prefix, flux,T_edge);
   /* Free memory */
   cout << "Computation Finished" << endl;
 }
