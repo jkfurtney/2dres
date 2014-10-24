@@ -5,11 +5,11 @@
 #include "numpy/noprefix.h"
 #include <structmember.h>
 
-//#include "Prog.hh"
+#include "Prog.hh"
 
 typedef struct {
   PyObject_HEAD
-  //Prog *prog;
+  Prog *prog;
 } py2dres;
 
 #define CHECK_SELF ;
@@ -29,21 +29,46 @@ static PyMethodDef py2dres_methods[] = {
 static int py2dres_init(py2dres *self, PyObject *args, PyObject *kwds) {
   char *mesh_file;
   double k, p0, u_in;
+  double dt = 1e-4;
+  struct Prog::prog_arg prog_val;
 
   static char *kwlist[] = {"mesh_file", "k", "p0", "u_in", NULL};
 
   if (! PyArg_ParseTupleAndKeywords(args, kwds, "sddd", kwlist,
                                     &mesh_file, &k, &p0, &u_in))
     return -1;
-  //self->prog = new Prog;
+
+  prog_val.meshfile           = mesh_file;
+  prog_val.Rinje              = 1.0;
+  prog_val.K_ext              = 0.0;
+  prog_val.p_ext              = 0.0;
+  prog_val.dt                 = dt;
+  prog_val.k_p                = k;
+  prog_val.mu1                = 0;
+  prog_val.mu2                = 0;
+  prog_val.p0                 = p0;
+  prog_val.u_in               = u_in;
+  prog_val.e_g                = 0.0;
+  prog_val.MAXTIME            = 0.0;
+  prog_val.visu_step          = 0;
+  prog_val.init_alpha         = 0;
+  prog_val.coort_file         = false;
+  prog_val.coorp_file         = false;
+  prog_val.alpha_out          = false;
+  prog_val.fracmat            = false;
+  prog_val.result             = false;
+  prog_val.production_log     = false;
+  prog_val.result_prefix      = "";
+
+  self->prog = new Prog(prog_val);
   return 0;
 }
 
 static void
 py2dres_dealloc(py2dres *self)
 {
-  //if (self->prog)
-  //delete self->prog;
+  if (self->prog)
+    delete self->prog;
   self->ob_type->tp_free((PyObject*)self);
 }
 
@@ -52,6 +77,7 @@ static PyObject *py2dres_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
   py2dres *self;
   self = (py2dres *)type->tp_alloc(type, 0);
+
   return (PyObject *)self;
 }
 
