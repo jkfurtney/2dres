@@ -89,9 +89,6 @@ Prog::Prog(prog_arg prog_val) {
 
 
   cout << "Create Prog" << endl;
-}
-
-void Prog::compute() {
   int debug = 1;
   FILE* file;
   int t=0;
@@ -109,60 +106,6 @@ void Prog::compute() {
   inject0_1 = 0; // We inject 0 into 1, inject0=1, used for debugging
 
   flux_in = u_in*2*Pi*Rinje;
-
-  if (debug) {
-    cout << "parameters for this run" << endl;
-    cout << "meshfile        : " << meshfile     << endl;
-    cout << "Rinje           : " << Rinje        << endl;
-    cout << "K_ext           : " << K_ext        << endl;
-    cout << "p_ext           : " << p_ext        << endl;
-    cout << "dt              : " << dt           << endl;
-    cout << "k_p             : " << k_p          << endl;
-    cout << "mu1             : " << mu1          << endl;
-    cout << "mu2             : " << mu2          << endl;
-    cout << "p0              : " << p0           << endl;
-    cout << "u_in            : " << u_in         << endl;
-    cout << "e_g             : " << e_g          << endl;
-    cout << "MAXTIME         : " << MAXTIME      << endl;
-    cout << "visu_step       : " << visu_step    << endl;
-    cout << "init_alpha      : " << init_alpha   << endl;
-    cout << "flux_in         : " << flux_in      << endl;
-    cout << "coort_file      : " << coort_file   << endl;
-    cout << "coorp_file      : " << coorp_file   << endl;
-    cout << "alpha_out       : " << alpha_out    << endl;
-    cout << "fracmat         : " << fracmat      << endl;
-    cout << "result          : " << result       << endl;
-    cout << "production_log  : " << production_log << endl;
-    cout << "result prefix   : " << result_prefix << endl;
-  }
-
-  //Create ouput file names.
-  strcpy(coortname, result_prefix);
-  strcat(coortname, "_coort.mat");
-
-  strcpy(coorpname, result_prefix);
-  strcat(coorpname, "_coorp.mat");
-
-  strcpy(fracname, result_prefix);
-  strcat(fracname, "_frac.mat");
-
-  strcpy(resultname, result_prefix);
-  strcat(resultname, "_result.mat");
-
-  strcpy(productionname, result_prefix);
-  strcat(productionname, "_production.log");
-
-  strcpy(alpha_outname, result_prefix);
-  strcat(alpha_outname, "_alpha_out.mat");
-
-  cout <<  endl << "     output files are going to be" << endl;
-  cout <<          "     ====== ===== === ===== == ==" << endl << endl;
-  if ( coorp_file )       cout << coorpname      << endl;
-  if ( coort_file )       cout << coortname      << endl;
-  if ( fracmat )          cout << fracname       << endl;
-  if ( result )           cout << resultname     << endl;
-  if ( production_log )   cout << productionname << endl;
-  if ( alpha_out )        cout << alpha_outname  << endl;
 
   // Create mesh
   Mesh mesh(meshfile);
@@ -188,49 +131,53 @@ void Prog::compute() {
 
   // Create Mixte Hybrid object
   put_mixhy_arg(&mixhy_val);
-  MixHy mixte(mixhy_val);
+  mixte_ = new MixHy(mixhy_val);
 
   // Create Advection Alpha Object
   put_iteralph_arg(&iteralph_val);
-  IterAlph advect(iteralph_val);
+  advect_ = new IterAlph(iteralph_val);
 
+
+}
+
+void Prog::compute() {
   // Create Visualiation Object
-  put_visu_arg(&visu_val);
-  Visu visu(visu_val);
+  // put_visu_arg(&visu_val);
+  // Visu visu(visu_val);
 
-  /* ******************** Main loop ***********************/
-  for (t=0; t<MAXTIME; t++) {
-    if (t==MAXTIME-1) {
-      cout << "FINAL RUN" << endl;
-      mixte.production_log=1;
-    }
-    mixte.update(t, alpha, pressure, flux);
-    advect.iteration_alpha(flux, alpha);
-    cout << "iteration_alpha t=" << t << endl;
+  // /* ******************** Main loop ***********************/
+  // for (t=0; t<MAXTIME; t++) {
+  //   if (t==MAXTIME-1) {
+  //     cout << "FINAL RUN" << endl;
+  //     mixte.production_log=1;
+  //   }
+  //   mixte.update(t, alpha, pressure, flux);
+  //   advect.iteration_alpha(flux, alpha);
+  //   cout << "iteration_alpha t=" << t << endl;
 
-    //visu.update_arival_time(alpha, t*dt);
+  //   //visu.update_arival_time(alpha, t*dt);
 
-    if (alpha_out) {
-      // save alpha on triangles after each time step
-      file = fopen(alpha_outname,"w");
-      for (i=0; i<Nt; i++) {
-        fprintf(file, "%g\n", alpha[i]);
-      }
-      fclose(file);
-    }
-    if (fmod(t, visu_step) == 0){
-      // save the data to create movie with matlab
-      visu.update(pressure, alpha, t);
-    }
-  }
-  /* *********************************************************/
+  //   if (alpha_out) {
+  //     // save alpha on triangles after each time step
+  //     file = fopen(alpha_outname,"w");
+  //     for (i=0; i<Nt; i++) {
+  //       fprintf(file, "%g\n", alpha[i]);
+  //     }
+  //     fclose(file);
+  //   }
+  //   if (fmod(t, visu_step) == 0){
+  //     // save the data to create movie with matlab
+  //     visu.update(pressure, alpha, t);
+  //   }
+  // }
+  // /* *********************************************************/
 
-  // final write to flood ammount
-  visu.update(pressure, alpha, t-1);
-  //visu.write_arrival_time(result_prefix);
-  //visu.write_well_flux(result_prefix, flux,T_edge);
-  /* Free memory */
-  cout << "Computation Finished" << endl;
+  // // final write to flood ammount
+  // visu.update(pressure, alpha, t-1);
+  // //visu.write_arrival_time(result_prefix);
+  // //visu.write_well_flux(result_prefix, flux,T_edge);
+  // /* Free memory */
+  // cout << "Computation Finished" << endl;
 }
 
 void Prog::alloc() {

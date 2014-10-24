@@ -16,7 +16,7 @@ typedef struct {
 static PyObject *py2dres_triangle_count(py2dres *self, PyObject *)
 {
   CHECK_SELF;
-  return PyInt_FromLong(10);
+  return PyInt_FromLong(self->prog->Nt);
 }
 
 static PyMethodDef py2dres_methods[] = {
@@ -67,8 +67,9 @@ static int py2dres_init(py2dres *self, PyObject *args, PyObject *kwds) {
 static void
 py2dres_dealloc(py2dres *self)
 {
-  if (self->prog)
-    delete self->prog;
+  Prog *p = self->prog;
+  if (p)
+    delete p;
   self->ob_type->tp_free((PyObject*)self);
 }
 

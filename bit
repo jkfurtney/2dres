@@ -1,0 +1,2 @@
+#!/bin/bash
+python setup.py build && rm -rf ~/.local/lib/python2.7/site-packages/py2dres-0.0.5dev-py2.7-linux-x86_64.egg &&  python setup.py install --user && python ptest/test.py
