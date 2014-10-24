@@ -40,7 +40,6 @@ public:
     char    *meshfile;
     double  Rinje;
     double  dt;
-    double  k_p;
     double  mu1;
     double  mu2;
     double  p0;
@@ -89,8 +88,6 @@ public:
   double** flux;
   //! time step to use
   double dt;
-  //! permeability of the domain
-  double k_p;
   //! viscosity of fluid 0
   double mu1;
   //! viscosity of fluid 1
@@ -215,6 +212,7 @@ public:
   char productionname[128];
   char alpha_outname[128];
 
+  double *mobility_;
 
 };
 

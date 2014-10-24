@@ -46,7 +46,6 @@ MixHy::MixHy(struct mixhy_arg mixhy_val) : cg() {
   edge    = mixhy_val.edge;
   T_edge  = mixhy_val.T_edge;
 
-  k_p     = mixhy_val.k_p;
   mu1     = mixhy_val.mu1;
   mu2     = mixhy_val.mu2;
   flux_in = mixhy_val.flux_in;
@@ -56,6 +55,7 @@ MixHy::MixHy(struct mixhy_arg mixhy_val) : cg() {
   dt      = mixhy_val.dt;
   production_log = mixhy_val.production_log;
   productionname = mixhy_val.productionname;
+  mobility_ = mixhy_val.mobility;
 
   leakCumulativeVolume = 0.0;
   producerCumulativeVolume = 0.0;
@@ -179,7 +179,7 @@ void MixHy::compute_flux(double* alpha, double** g, double* tpress, double** flu
   double k_mu=0.0;
 
   for (l=0; l<Nt; l++) {
-    k_mu=k_p/( alpha[l]*mu1 + (1.0-alpha[l])*mu2 );
+    k_mu = mobility_[l];
     trace = invMl[l][0] + invMl[l][1] + invMl[l][2];
     for (i=0; i<3; i++) {
       flux[l][i]=0.0;
@@ -193,10 +193,6 @@ void MixHy::compute_flux(double* alpha, double** g, double* tpress, double** flu
         int_prod += flux[l][i];
         producerCumulativeVolumeAlpha += flux[l][i]*(1-alpha[l])*dt;
         producerCumulativeVolume += flux[l][i]*dt;
-        if (alpha[l] > 0.9  && (! fluid1atProducer)) {
-          fluid1atProducer++;
-          cout << "fluid 1 hit producer"<< endl;
-        }
       }
       if ( Ref==INJECTOR ) {
         int_inje += flux[l][i];
@@ -242,7 +238,7 @@ void MixHy::compute_pressure(double* alpha, double** g, double* tpress, double* 
   memset(pressure, 0, Nt*sizeof(double));
   for (l=0; l<Nt; l++)
     {
-      k_mu=k_p/( alpha[l]*mu1 + (1.0-alpha[l])*mu2 );
+      k_mu = mobility_[l];
       for (i=0; i<3; i++)
         {
           pressure[l] += invMl[l][i]*(tpress[ Coore[l][i] ] + g[l][i]);
@@ -262,7 +258,7 @@ void MixHy::createA(double* alpha, double*** A)
 
   /* Loop on all triangles */
   for (l=0; l<Nt; l++) {
-    k_mu=k_p/( alpha[l]*mu1 + (1.0-alpha[l])*mu2 );
+    k_mu=mobility_[i];
     for (i=0; i<3; i++) {
       for (j=0; j<3; j++) {
         A[l][i][j] = k_mu*Al[l][i][j];

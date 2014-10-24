@@ -65,7 +65,6 @@ Prog::Prog(prog_arg prog_val) {
   meshfile       = prog_val.meshfile;
   Rinje          = prog_val.Rinje;
   dt             = prog_val.dt;
-  k_p            = prog_val.k_p;
   mu1            = prog_val.mu1;
   mu2            = prog_val.mu2;
   p0             = prog_val.p0;
@@ -111,7 +110,7 @@ Prog::Prog(prog_arg prog_val) {
   cout << " t sweep is : " << -1*total_area/(flux_in*dt) << endl;
 
   // Test CFL
-  if(  k_p/amMAX(mu1,mu2)*fabs(u_in)*(1+e_g)*dt >= nloop*hmin )
+  if(  1.0/amMAX(mu1,mu2)*fabs(u_in)*(1+e_g)*dt >= nloop*hmin )
     {
       cout << "******************" << endl;
       cout << "* Beware of CFL! *" << endl;
@@ -148,11 +147,14 @@ void Prog::alloc() {
 
   alpha   = new double[Nt];
   pressure= new double[Nt];
+  mobility_ = new double[Nt];
   flux = new double* [Nt];
+
   for (i=0; i<Nt; i++) {
-      flux[i] = new double[3];
-      memset(flux[i], 0, 3*sizeof(double));
-    }
+    mobility_[i] = 1.0;
+    flux[i] = new double[3];
+    memset(flux[i], 0, 3*sizeof(double));
+  }
 
   memset(alpha, 0, Nt*sizeof(double));
   memset(pressure, 0, Nt*sizeof(double));
@@ -178,8 +180,10 @@ Prog::~Prog() {
   int i=0;
 
   cout << "Destructor Prog" << endl;
-  delete[] alpha;
-  delete[] pressure;
+  delete [] alpha;
+  delete [] pressure;
+  delete [] mobility_;
+
   for (i=0; i<Nt; i++)
     {
       delete[] flux[i];
@@ -228,7 +232,6 @@ void Prog::put_mixhy_arg(struct MixHy::mixhy_arg *mixhy_val) {
   mixhy_val->invMl       = invMl;
   mixhy_val->edge        = edge;
   mixhy_val->T_edge      = T_edge;
-  mixhy_val->k_p         = k_p;
   mixhy_val->mu1          = mu1;
   mixhy_val->mu2          = mu2;
   mixhy_val->flux_in      = flux_in;
@@ -237,7 +240,7 @@ void Prog::put_mixhy_arg(struct MixHy::mixhy_arg *mixhy_val) {
   mixhy_val->dt           = dt;
   mixhy_val->production_log   = production_log;
   mixhy_val->productionname   = productionname;
-
+  mixhy_val->mobility = mobility_;
 }
 
 void Prog::put_iteralph_arg(struct IterAlph::iteralph_arg *iteralph_val) {

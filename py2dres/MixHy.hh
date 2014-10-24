@@ -48,7 +48,6 @@ public:
     struct Mesh::Edge**  edge;
     struct Mesh::Edge*** T_edge;
 
-    double k_p;
     double mu1;
     double mu2;
     double flux_in;
@@ -57,6 +56,7 @@ public:
     double dt;
     int production_log;
     char *productionname;
+    double *mobility;
   };
 
 
@@ -79,7 +79,6 @@ public:
   // Constants
   int   Nt;
   int   Ne;
-  double k_p;
   double mu1;
   double mu2;
   double flux_in;
@@ -122,7 +121,7 @@ public:
 
   int production_log;
   char *productionname;
-
+  double *mobility_;
   // Other class
   ConjGrad cg;
 };

@@ -36,20 +36,19 @@ static PyMethodDef py2dres_methods[] = {
 
 static int py2dres_init(py2dres *self, PyObject *args, PyObject *kwds) {
   char *mesh_file;
-  double k, p0, u_in;
+  double p0, u_in;
   double dt = 1e-4;
   struct Prog::prog_arg prog_val;
 
-  static char *kwlist[] = {"mesh_file", "k", "p0", "u_in", NULL};
+  static char *kwlist[] = {"mesh_file", "p0", "u_in", NULL};
 
-  if (! PyArg_ParseTupleAndKeywords(args, kwds, "sddd", kwlist,
-                                    &mesh_file, &k, &p0, &u_in))
+  if (! PyArg_ParseTupleAndKeywords(args, kwds, "sdd", kwlist,
+                                    &mesh_file, &p0, &u_in))
     return -1;
 
   prog_val.meshfile           = mesh_file;
   prog_val.Rinje              = 1.0;
   prog_val.dt                 = dt;
-  prog_val.k_p                = k;
   prog_val.mu1                = 0;
   prog_val.mu2                = 0;
   prog_val.p0                 = p0;
