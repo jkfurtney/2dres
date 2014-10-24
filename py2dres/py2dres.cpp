@@ -21,16 +21,43 @@ static PyObject *py2dres_triangle_count(py2dres *self, PyObject *)
 
 static PyObject *py2dres_update_p(py2dres *self, PyObject *){
   self->prog->updateP();
+  Py_RETURN_NONE;
 }
 
 static PyObject *py2dres_update_a(py2dres *self, PyObject *){
   self->prog->updateA();
+  Py_RETURN_NONE;
+}
+
+static PyObject *mobility(py2dres *self, PyObject *){
+  npy_intp dims[12];
+  dims[0] = self->prog->Nt;
+  void *data = (void *)self->prog->mobility_;
+  return PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, data);
+}
+
+static PyObject *alpha(py2dres *self, PyObject *){
+  npy_intp dims[12];
+  dims[0] = self->prog->Nt;
+  void *data = (void *)self->prog->alpha;
+  return PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, data);
+}
+
+static PyObject *pressure(py2dres *self, PyObject *){
+  npy_intp dims[12];
+  dims[0] = self->prog->Nt;
+  void *data = (void *)self->prog->pressure;
+  return PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, data);
 }
 
 static PyMethodDef py2dres_methods[] = {
   {"triangle_count", (PyCFunction)py2dres_triangle_count, METH_NOARGS, "Return the number if triangles"},
   {"update_p", (PyCFunction)py2dres_update_p, METH_NOARGS, "update pressure solution"},
   {"update_a", (PyCFunction)py2dres_update_a, METH_NOARGS, "update advection"},
+  {"mobility", (PyCFunction)mobility, METH_NOARGS, "return mobility array"},
+  {"alpha", (PyCFunction)alpha, METH_NOARGS, "return advected scalar"},
+  {"pressure", (PyCFunction)pressure, METH_NOARGS, "return advected scalar"},
+
   {NULL}  /* Sentinel */
 };
 

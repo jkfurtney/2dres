@@ -70,7 +70,7 @@ public:
 
   ~ConjGrad()
   {
-    int i,j;
+    int i;
 
     cout << "Destructor ConjGrad" << endl;
     delete[] r;
