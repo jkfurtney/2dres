@@ -37,11 +37,6 @@ void Mesh::meshRead(FILE* fd) {
   int dummy;
   int i;
 
-  /*double Xleak_min=0.175;
-  double Xleak_max=0.21;
-  double Yleak_min=0.09;
-  double Yleak_max=0.14;*/
-
   fgets(dummyline, MAXLINE, fd);
 
   memset(Coorp, 0, 2*Np*sizeof(double));
@@ -63,23 +58,6 @@ void Mesh::meshRead(FILE* fd) {
      the indexes start with 0, I decrease Coort of 1           */
   for (i=0; i<3*Nt; i++)
     Coort[i] -= 1;
-
-  /*  cout << "SWITH OFF NORTH INJECTOR" << endl;
-      cout << "DEFINE LEAK POSITION" << endl;
-      for (i=0; i<Np; i++)    {
-      if ( Refp[i]==INJECTOR && Coorp[2*i+1]>0.5 )      {
-      Refp[i]=BORDER;
-      }
-
-      if ( Refp[i]==BORDER
-      && Coorp[2*i+1] > Yleak_min
-      && Coorp[2*i+1] < Yleak_max
-           && Coorp[2*i]   > Xleak_min
-           && Coorp[2*i]   < Xleak_max ){
-           Refp[i]=LEAK;
-           }
-  */
-
 }
 
 
@@ -111,7 +89,6 @@ Mesh::Mesh(char* meshfile) {
   edge=0;
   segINJE=0;
   segPROD=0;
-  segLEAK=0;
   segBORD=0;
   total_area = 0.0;
 
@@ -171,7 +148,6 @@ Mesh::Mesh(char* meshfile) {
   cout << "meshEdge OK Ne=" << Ne << endl;
   cout << "segINJE=" << segINJE
        << " segPROD=" << segPROD
-       << " segLEAK=" << segLEAK
        << " segBORD=" << segBORD<< endl;
 
   /* ***** Compute the matrixes used in the computation *******/
@@ -362,18 +338,9 @@ void Mesh::meshEdge() {
           edge[Ne]->Ref=PRODUCER;
           segPROD =  segPROD + 1;
         }
-        if ( Refp[PointI]==LEAK &&  Refp[PointJ]==LEAK ) {
-          edge[Ne]->Ref=LEAK;
-          segLEAK =  segLEAK + 1;
-        }
         if ( (Refp[PointI]==BORDER && Refp[PointJ]==BORDER) ||
              (Refp[PointI]!=Refp[PointJ] &&
               Refp[PointI]!=NORMAL && Refp[PointJ]!=NORMAL))  {
-          /* For the squared domain */
-          /* For the squared domain
-             if (Coorp[2*PointI]==Coorp[2*PointJ] )
-             {
-          */
           edge[Ne]->Ref=BORDER;
           segBORD =  segBORD + 1;
         }
@@ -589,7 +556,6 @@ void Mesh::get(struct mesh_data *mesh_val) {
   mesh_val->edge=edge;
   mesh_val->segINJE=segINJE;
   mesh_val->segPROD=segPROD;
-  mesh_val->segLEAK=segLEAK;
   mesh_val->segBORD=segBORD;
   mesh_val->total_area = total_area;
 }

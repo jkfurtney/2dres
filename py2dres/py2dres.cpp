@@ -19,11 +19,19 @@ static PyObject *py2dres_triangle_count(py2dres *self, PyObject *)
   return PyInt_FromLong(self->prog->Nt);
 }
 
+static PyObject *py2dres_update_p(py2dres *self, PyObject *){
+  self->prog->updateP();
+}
+
+static PyObject *py2dres_update_a(py2dres *self, PyObject *){
+  self->prog->updateA();
+}
+
 static PyMethodDef py2dres_methods[] = {
-    {"triangle_count", (PyCFunction)py2dres_triangle_count, METH_NOARGS,
-     "Return the number if triangles"
-    },
-    {NULL}  /* Sentinel */
+  {"triangle_count", (PyCFunction)py2dres_triangle_count, METH_NOARGS, "Return the number if triangles"},
+  {"update_p", (PyCFunction)py2dres_update_p, METH_NOARGS, "update pressure solution"},
+  {"update_a", (PyCFunction)py2dres_update_a, METH_NOARGS, "update advection"},
+  {NULL}  /* Sentinel */
 };
 
 static int py2dres_init(py2dres *self, PyObject *args, PyObject *kwds) {
@@ -40,8 +48,6 @@ static int py2dres_init(py2dres *self, PyObject *args, PyObject *kwds) {
 
   prog_val.meshfile           = mesh_file;
   prog_val.Rinje              = 1.0;
-  prog_val.K_ext              = 0.0;
-  prog_val.p_ext              = 0.0;
   prog_val.dt                 = dt;
   prog_val.k_p                = k;
   prog_val.mu1                = 0;

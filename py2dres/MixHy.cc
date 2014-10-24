@@ -53,8 +53,6 @@ MixHy::MixHy(struct mixhy_arg mixhy_val) : cg() {
   e_g     = mixhy_val.e_g;
 
   MAXTIME = mixhy_val.MAXTIME;
-  K_ext   = mixhy_val.K_ext;
-  p_ext   = mixhy_val.p_ext;
   dt      = mixhy_val.dt;
   production_log = mixhy_val.production_log;
   productionname = mixhy_val.productionname;
@@ -110,7 +108,7 @@ MixHy::~MixHy() {
   delete[] mask;
 }
 
-void MixHy::update(int time, double* alpha, double* pressure, double** flux){
+void MixHy::update(double* alpha, double* pressure, double** flux){
   compute_tpress(alpha, g, tpress);
   compute_flux(alpha, g, tpress, flux);
   compute_pressure(alpha, g, tpress, pressure);
@@ -129,14 +127,6 @@ void MixHy::set_dirichlet() {
     }
 
   for (i=0; i<Ne; i++) {
-    /*
-      if (edge[i]->Ref==INJECTOR)
-      {
-      mask[i]=0;
-      tp0[i]=1.0;
-      }
-    */
-
     if (edge[i]->Ref==PRODUCER) {
       mask[i]=0;
       tp0[i]=0.0;
@@ -211,15 +201,6 @@ void MixHy::compute_flux(double* alpha, double** g, double* tpress, double** flu
       if ( Ref==INJECTOR ) {
         int_inje += flux[l][i];
       }
-      if ( Ref==LEAK ) {
-        int_leak += flux[l][i];
-        leakCumulativeVolumeAlpha += flux[l][i]*(1-alpha[l])*dt;
-        leakCumulativeVolume += flux[l][i]*dt;
-        if (alpha[l]==1.0 && (! fluid1atLeak)) {
-          fluid1atLeak++;
-          cout << "fluid 1 hit leak"<< endl;
-        }
-      }
     }
 
     // Test if mass conserved
@@ -280,25 +261,14 @@ void MixHy::createA(double* alpha, double*** A)
   int     j=0;
 
   /* Loop on all triangles */
-  for (l=0; l<Nt; l++)
-    {
-      k_mu=k_p/( alpha[l]*mu1 + (1.0-alpha[l])*mu2 );
-      for (i=0; i<3; i++)
-        {
-          for (j=0; j<3; j++)
-            {
-              A[l][i][j] = k_mu*Al[l][i][j];
-            }
-        }
-
-      for (i=0; i<3; i++)
-        {
-          if ( T_edge[l][i]->Ref == LEAK )
-            {
-              A[l][i][i] += K_ext;
-            }
-        }
+  for (l=0; l<Nt; l++) {
+    k_mu=k_p/( alpha[l]*mu1 + (1.0-alpha[l])*mu2 );
+    for (i=0; i<3; i++) {
+      for (j=0; j<3; j++) {
+        A[l][i][j] = k_mu*Al[l][i][j];
+      }
     }
+  }
 }
 
 
@@ -331,51 +301,40 @@ void MixHy::createb(double* alpha, double** g, double* b)
   memset(b, 0, Ne*sizeof(double));
 
   /* Add the buoyancy contribution given by g */
-  for (l=0; l<Nt; l++)
-    {
-      for (i=0; i<3; i++)
-        {
-          for (j=0; j<3; j++)
-            {
-              b[ Coore[l][i] ] += (-A[l][i][j])*g[l][j];
-            }
-        }
+  for (l=0; l<Nt; l++) {
+    for (i=0; i<3; i++) {
+      for (j=0; j<3; j++) {
+        b[ Coore[l][i] ] += (-A[l][i][j])*g[l][j];
+      }
     }
+  }
 
   /* Look at the Neumann condition for the velocity */
-  for (l=0; l<Nt; l++)
-    {
-      for (i=0; i<3; i++)
-        {
-          Ref=T_edge[l][i]->Ref;
-          double length = T_edge[l][i]->length;
-          if ( Ref != NORMAL )
-            {
-              if ( Ref==BORDER ||  Ref==PRODUCER )
-                {
-                  b[ Coore[l][i] ] += 0.0;
-                }
-              else if ( Ref==INJECTOR )
-                {
-                  if ( segINJE != 0 )
-                    {
-                      /* We have -flux because we take - the equation
-                         to have a finite POSITIVE matrix             */
-                      b[ Coore[l][i] ] += -flux_in * length;
-                      //printf("setting flux at %i %i to %lf\n", l, i, -flux_in * length);
-                    }
-                  else
-                    {
-                      printf("Error, segINJE=0\n");
-                    }
-                }
-              else
-                { // Ref==LEAK)
-                  b[ Coore[l][i] ] += K_ext*p_ext;
-                }
-            }
+  for (l=0; l<Nt; l++) {
+    for (i=0; i<3; i++) {
+      Ref=T_edge[l][i]->Ref;
+      double length = T_edge[l][i]->length;
+      if ( Ref != NORMAL ) {
+        if ( Ref==BORDER ||  Ref==PRODUCER ) {
+          b[ Coore[l][i] ] += 0.0;
         }
+        else if ( Ref==INJECTOR ) {
+          if ( segINJE != 0 ) {
+            /* We have -flux because we take - the equation
+               to have a finite POSITIVE matrix             */
+            b[ Coore[l][i] ] += -flux_in * length;
+            //printf("setting flux at %i %i to %lf\n", l, i, -flux_in * length);
+          }
+          else {
+            printf("Error, segINJE=0\n");
+          }
+        }
+        else { // Ref==LEAK)
+          printf("Error, unknown segment code\n");
+        }
+      }
     }
+  }
 }
 
 

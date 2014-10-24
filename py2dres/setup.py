@@ -8,7 +8,6 @@ def configuration(parent_package='', top_path=None):
                                    "Prog.cc",
                                    "MixHy.cc",
                                    "Mesh.cc",
-                                   "Visu.cc",
                                    "IterAlph.cc",
                                    "ConjGrad.cc",
                                    "mylibrary.cc"],

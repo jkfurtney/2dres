@@ -53,8 +53,6 @@ Prog::Prog(prog_arg prog_val) {
   segBORD=0;
   total_area=0.0;
   Rinje=0.0;
-  K_ext=0.0;
-  p_ext=0.0;
   init_alpha=0;
   coort_file = 0;
   coorp_file = 0;
@@ -64,11 +62,8 @@ Prog::Prog(prog_arg prog_val) {
   production_log = 0;
   result_prefix = 0;
 
-
   meshfile       = prog_val.meshfile;
   Rinje          = prog_val.Rinje;
-  K_ext          = prog_val.K_ext;
-  p_ext          = prog_val.p_ext;
   dt             = prog_val.dt;
   k_p            = prog_val.k_p;
   mu1            = prog_val.mu1;
@@ -87,7 +82,6 @@ Prog::Prog(prog_arg prog_val) {
   production_log = prog_val.production_log;
   result_prefix  = prog_val.result_prefix;
 
-
   cout << "Create Prog" << endl;
   int debug = 1;
   FILE* file;
@@ -97,7 +91,6 @@ Prog::Prog(prog_arg prog_val) {
   struct Mesh::mesh_data            mesh_val;
   struct MixHy::mixhy_arg          mixhy_val;
   struct IterAlph::iteralph_arg iteralph_val;
-  struct Visu::visu_arg             visu_val;
 
   char newline;
 
@@ -136,49 +129,18 @@ Prog::Prog(prog_arg prog_val) {
   // Create Advection Alpha Object
   put_iteralph_arg(&iteralph_val);
   advect_ = new IterAlph(iteralph_val);
-
-
+  time_ = 0.0;
 }
 
-void Prog::compute() {
-  // Create Visualiation Object
-  // put_visu_arg(&visu_val);
-  // Visu visu(visu_val);
-
-  // /* ******************** Main loop ***********************/
-  // for (t=0; t<MAXTIME; t++) {
-  //   if (t==MAXTIME-1) {
-  //     cout << "FINAL RUN" << endl;
-  //     mixte.production_log=1;
-  //   }
-  //   mixte.update(t, alpha, pressure, flux);
-  //   advect.iteration_alpha(flux, alpha);
-  //   cout << "iteration_alpha t=" << t << endl;
-
-  //   //visu.update_arival_time(alpha, t*dt);
-
-  //   if (alpha_out) {
-  //     // save alpha on triangles after each time step
-  //     file = fopen(alpha_outname,"w");
-  //     for (i=0; i<Nt; i++) {
-  //       fprintf(file, "%g\n", alpha[i]);
-  //     }
-  //     fclose(file);
-  //   }
-  //   if (fmod(t, visu_step) == 0){
-  //     // save the data to create movie with matlab
-  //     visu.update(pressure, alpha, t);
-  //   }
-  // }
-  // /* *********************************************************/
-
-  // // final write to flood ammount
-  // visu.update(pressure, alpha, t-1);
-  // //visu.write_arrival_time(result_prefix);
-  // //visu.write_well_flux(result_prefix, flux,T_edge);
-  // /* Free memory */
-  // cout << "Computation Finished" << endl;
+void Prog::updateP() {
+  mixte_->update(alpha, pressure, flux);
 }
+
+void Prog::updateA() {
+  time_ += dt;
+  advect_->iteration_alpha(flux, alpha);
+}
+
 
 void Prog::alloc() {
   FILE* file;
@@ -272,8 +234,6 @@ void Prog::put_mixhy_arg(struct MixHy::mixhy_arg *mixhy_val) {
   mixhy_val->flux_in      = flux_in;
   mixhy_val->e_g          = e_g;
   mixhy_val->MAXTIME      = MAXTIME;
-  mixhy_val->K_ext        = K_ext;
-  mixhy_val->p_ext        = p_ext;
   mixhy_val->dt           = dt;
   mixhy_val->production_log   = production_log;
   mixhy_val->productionname   = productionname;
@@ -299,23 +259,41 @@ void Prog::put_iteralph_arg(struct IterAlph::iteralph_arg *iteralph_val) {
   iteralph_val->SumMass   = SumMass;
 }
 
-void Prog::put_visu_arg(struct Visu::visu_arg *visu_val) {
-  visu_val->Nt                  = Nt;
-  visu_val->Np                  = Np;
-  visu_val->Coort               = Coort;
-  visu_val->Coorp               = Coorp;
-  visu_val->SumMass             = SumMass;
-  visu_val->Ihat                = Ihat;
-  visu_val->area                = area;
-  visu_val->alpha_out           = alpha_out;
-  visu_val->fracmat             = fracmat;
-  visu_val->result              = result;
-  visu_val->coort_file          = coort_file;
-  visu_val->coorp_file          = coorp_file;
-  visu_val->Refp                = Refp;
-  visu_val->total_area          = total_area;
-  visu_val->coortname           = coortname;
-  visu_val->coorpname           = coorpname;
-  visu_val->fracname            = fracname;
-  visu_val->resultname          = resultname;
-}
+
+// Create Visualiation Object
+  // put_visu_arg(&visu_val);
+  // Visu visu(visu_val);
+
+  // /* ******************** Main loop ***********************/
+  // for (t=0; t<MAXTIME; t++) {
+  //   if (t==MAXTIME-1) {
+  //     cout << "FINAL RUN" << endl;
+  //     mixte.production_log=1;
+  //   }
+  //   mixte.update(t, alpha, pressure, flux);
+  //   advect.iteration_alpha(flux, alpha);
+  //   cout << "iteration_alpha t=" << t << endl;
+
+  //   //visu.update_arival_time(alpha, t*dt);
+
+  //   if (alpha_out) {
+  //     // save alpha on triangles after each time step
+  //     file = fopen(alpha_outname,"w");
+  //     for (i=0; i<Nt; i++) {
+  //       fprintf(file, "%g\n", alpha[i]);
+  //     }
+  //     fclose(file);
+  //   }
+  //   if (fmod(t, visu_step) == 0){
+  //     // save the data to create movie with matlab
+  //     visu.update(pressure, alpha, t);
+  //   }
+  // }
+  // /* *********************************************************/
+
+  // // final write to flood ammount
+  // visu.update(pressure, alpha, t-1);
+  // //visu.write_arrival_time(result_prefix);
+  // //visu.write_well_flux(result_prefix, flux,T_edge);
+  // /* Free memory */
+  // cout << "Computation Finished" << endl;

@@ -31,7 +31,6 @@
 #include "Mesh.hh"
 #include "MixHy.hh"
 #include "IterAlph.hh"
-#include "Visu.hh"
 #include <string.h>
 
 class Prog {
@@ -40,8 +39,6 @@ public:
   struct prog_arg {
     char    *meshfile;
     double  Rinje;
-    double  K_ext;
-    double  p_ext;
     double  dt;
     double  k_p;
     double  mu1;
@@ -65,16 +62,18 @@ public:
 
   Prog(struct prog_arg prog_val);
   ~Prog();
-  void compute();
   void alloc();
   void set_mesh_values(struct Mesh::mesh_data mesh_val);
   void put_mixhy_arg(struct MixHy::mixhy_arg *mixhy_val);
   void put_iteralph_arg(struct IterAlph::iteralph_arg *iteralph_val);
-  void put_visu_arg(struct Visu::visu_arg *visu_val);
+
+  // python interface to solver
+  void updateP();
+  void updateA();
 
 public:
 
-
+  double time_;
   MixHy *mixte_;
   IterAlph *advect_;
 
@@ -169,10 +168,6 @@ public:
   //! radius of the injector used to calculate flux_in
   double Rinje;
   //! permiability of leak in boundary
-  double K_ext;
-  //! external pressure at leak in boundary
-  double p_ext;
-  //! input parameter used to start a run with initial alpha values
   int init_alpha;
   //! boolean value should we create a file called coort.mat?
   int  coort_file;

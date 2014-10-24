@@ -246,7 +246,7 @@ void IterAlph::create_alphaflux(double** alpha, double** flux,
       Ref=T_edge[l][seg]->Ref;
       double length = T_edge[l][seg]->length;
       double fluxINJ = flux_in * length;
-      if (Ref!=NORMAL && Ref!=LEAK) {
+      if (Ref!=NORMAL) {
         if (Ref==INJECTOR) {
           // new fluid coming in from the injector
           alpha_flux[l][seg]=(1.0-inject0_1)*fluxINJ;
@@ -268,33 +268,27 @@ void IterAlph::create_alphaflux(double** alpha, double** flux,
           alpha_flux[l][seg] = flux[l][seg]*alpha[seg][l];
         }
         else {
-          if (Ref==LEAK) {
-            // alpha = 0 should come through the fluid
-            alpha_flux[l][seg] = inject0_1*flux[l][seg];
+          /* The flux goes in, we take the
+             alpha of the other triangle   */
+          if( T_edge[l][seg]->l==l ) {
+            k=T_edge[l][seg]->k;
+            kseg=T_edge[l][seg]->kseg;
           }
           else {
-            /* The flux goes in, we take the
-               alpha of the other triangle   */
-            if( T_edge[l][seg]->l==l ) {
-              k=T_edge[l][seg]->k;
-              kseg=T_edge[l][seg]->kseg;
+            if( T_edge[l][seg]->k==l )   {
+              k=T_edge[l][seg]->l;
+              kseg=T_edge[l][seg]->lseg;
             }
-            else {
-              if( T_edge[l][seg]->k==l )   {
-                k=T_edge[l][seg]->l;
-                kseg=T_edge[l][seg]->lseg;
-              }
-              else{
-                cout << "Error in the segments" << endl;
-              }
+            else{
+              cout << "Error in the segments" << endl;
             }
+          }
 
-            if (k==-1) {
-              cout << "Problem in alpha_flux" << endl;
-            }
-            else {
-              alpha_flux[l][seg] = flux[l][seg]*alpha[kseg][k];
-            }
+          if (k==-1) {
+            cout << "Problem in alpha_flux" << endl;
+          }
+          else {
+            alpha_flux[l][seg] = flux[l][seg]*alpha[kseg][k];
           }
         }
       }

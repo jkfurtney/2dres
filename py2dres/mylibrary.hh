@@ -7,7 +7,6 @@
 
 #define SMALL 10E-12
 #define Pi    3.14159265358979323846
-#define LEAK        5
 #define INJECTOR    4
 #define PRODUCER    3
 #define BORDER      2

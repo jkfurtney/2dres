@@ -90,7 +90,6 @@ public:
     struct Edge** edge;
     int segINJE;
     int segPROD;
-    int segLEAK;
     int segBORD;
     double total_area;
   };
@@ -139,7 +138,6 @@ public:
   struct Edge** edge;    // (Edge*)[Ne] ptr on edges
   int segINJE;
   int segPROD;
-  int segLEAK;
   int segBORD;
   double total_area;
 };
