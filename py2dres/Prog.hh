@@ -75,6 +75,7 @@ public:
   double time_;
   MixHy *mixte_;
   IterAlph *advect_;
+  Mesh *mesh_;
 
   //! The mesh file to read. This must be in .amdba format
   char *meshfile;

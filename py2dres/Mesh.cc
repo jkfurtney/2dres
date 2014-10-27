@@ -91,6 +91,9 @@ Mesh::Mesh(char* meshfile) {
   segPROD=0;
   segBORD=0;
   total_area = 0.0;
+  injLength_ = 0.0;
+  prodLength_ = 0.0;
+  borderLength_ = 0.0;
 
   /* Read Np and Nt */
   if ( (fd = fopen(meshfile,"r")) == NULL ){
@@ -149,6 +152,10 @@ Mesh::Mesh(char* meshfile) {
   cout << "segINJE=" << segINJE
        << " segPROD=" << segPROD
        << " segBORD=" << segBORD<< endl;
+
+  cout << "total length of injector edges " << injLength_ << endl;
+  cout << "total length of producer edges " << prodLength_ << endl;
+  cout << "total length of boundary edges " << borderLength_ << endl;
 
   /* ***** Compute the matrixes used in the computation *******/
   meshCompute();
@@ -333,16 +340,19 @@ void Mesh::meshEdge() {
         if ( Refp[PointI]==INJECTOR &&  Refp[PointJ]==INJECTOR )  {
           edge[Ne]->Ref=INJECTOR;
           segINJE =  segINJE + 1;
+          injLength_ += edge[Ne]->length;
         }
         if ( Refp[PointI]==PRODUCER &&  Refp[PointJ]==PRODUCER ) {
           edge[Ne]->Ref=PRODUCER;
           segPROD =  segPROD + 1;
+          prodLength_ += edge[Ne]->length;
         }
         if ( (Refp[PointI]==BORDER && Refp[PointJ]==BORDER) ||
              (Refp[PointI]!=Refp[PointJ] &&
               Refp[PointI]!=NORMAL && Refp[PointJ]!=NORMAL))  {
           edge[Ne]->Ref=BORDER;
           segBORD =  segBORD + 1;
+          borderLength_ += edge[Ne]->length;
         }
         Ne++;
       }

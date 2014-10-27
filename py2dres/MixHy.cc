@@ -167,7 +167,6 @@ void MixHy::compute_tpress(double* alpha, double** g, double* tpress)
 }
 
 void MixHy::compute_flux(double* alpha, double** g, double* tpress, double** flux) {
-  /* PUT THE k/mu */
   int l=0;
   int i=0;
   int j=0;
@@ -236,15 +235,13 @@ void MixHy::compute_pressure(double* alpha, double** g, double* tpress, double* 
   double k_mu=0.0;
 
   memset(pressure, 0, Nt*sizeof(double));
-  for (l=0; l<Nt; l++)
-    {
-      k_mu = mobility_[l];
-      for (i=0; i<3; i++)
-        {
-          pressure[l] += invMl[l][i]*(tpress[ Coore[l][i] ] + g[l][i]);
-        }
-      pressure[l]=k_mu*pressure[l]/(invMl[l][0]+invMl[l][1]+invMl[l][2]);
+  for (l=0; l<Nt; l++) {
+    k_mu = mobility_[l];
+    for (i=0; i<3; i++) {
+      pressure[l] += invMl[l][i]*(tpress[ Coore[l][i] ] + g[l][i]);
     }
+    pressure[l] = pressure[l]/(invMl[l][0]+invMl[l][1]+invMl[l][2]);
+  }
 }
 
 

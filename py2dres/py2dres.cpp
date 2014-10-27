@@ -50,6 +50,28 @@ static PyObject *pressure(py2dres *self, PyObject *){
   return PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, data);
 }
 
+static PyObject *flux(py2dres *self, PyObject *){
+  npy_intp dims[12];
+  dims[0] = self->prog->Nt;
+  dims[1] = 3;
+  void *data = (void *)self->prog->flux;
+  return PyArray_SimpleNewFromData(2, dims, NPY_DOUBLE, data);
+}
+
+static PyObject *edge_pressure(py2dres *self, PyObject *){
+  npy_intp dims[12];
+  dims[0] = self->prog->Nt;
+  dims[1] = 3;
+  void *data = (void *)self->prog->mixte_->tpress;
+  return PyArray_SimpleNewFromData(2, dims, NPY_DOUBLE, data);
+}
+
+static PyObject *x(py2dres *self, PyObject *){
+  npy_intp dims[12];
+  dims[0] = self->prog->Nt;
+  return PyArray_SimpleNew(1, dims, NPY_DOUBLE);
+}
+
 static PyMethodDef py2dres_methods[] = {
   {"triangle_count", (PyCFunction)py2dres_triangle_count, METH_NOARGS, "Return the number if triangles"},
   {"update_p", (PyCFunction)py2dres_update_p, METH_NOARGS, "update pressure solution"},
@@ -57,7 +79,11 @@ static PyMethodDef py2dres_methods[] = {
   {"mobility", (PyCFunction)mobility, METH_NOARGS, "return mobility array"},
   {"alpha", (PyCFunction)alpha, METH_NOARGS, "return advected scalar"},
   {"pressure", (PyCFunction)pressure, METH_NOARGS, "return advected scalar"},
-
+  {"flux", (PyCFunction)flux, METH_NOARGS, "flux on triangle edges (Nt,3)"},
+  {"edge_pressure", (PyCFunction)edge_pressure, METH_NOARGS,
+   "pressure on triangle edges (Nt,3)"},
+  {"x", (PyCFunction)x, METH_NOARGS, "x coordinate of element centroids"},
+  {"y", (PyCFunction)y, METH_NOARGS, "y coordinate of element centroids"},
   {NULL}  /* Sentinel */
 };
 

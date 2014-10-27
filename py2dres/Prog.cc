@@ -97,26 +97,21 @@ Prog::Prog(prog_arg prog_val) {
   limitgrad = 1; // We use MUSCL when =1
   inject0_1 = 0; // We inject 0 into 1, inject0=1, used for debugging
 
-  flux_in = u_in*2*Pi*Rinje;
 
   // Create mesh
-  Mesh mesh(meshfile);
+  mesh_  = new Mesh(meshfile);
 
   // Get mesh data
-  mesh.get(&mesh_val);
+  mesh_->get(&mesh_val);
   set_mesh_values(mesh_val);
 
-  cout << " total area of the mesh is: " << total_area << endl;
-  cout << " t sweep is : " << -1*total_area/(flux_in*dt) << endl;
+  double flux_total = u_in * mesh_->injLength_;
+  flux_in = -u_in/mesh_->injLength_; // m/s
 
-  // Test CFL
-  if(  1.0/amMAX(mu1,mu2)*fabs(u_in)*(1+e_g)*dt >= nloop*hmin )
-    {
-      cout << "******************" << endl;
-      cout << "* Beware of CFL! *" << endl;
-      cout << "*  dt too big    *" << endl;
-      cout << "******************" << endl;
-    }
+  dt = 0.5 * nloop*hmin/u_in;
+  cout << " timestep: " << dt << endl;
+  cout << " total area of the mesh is: " << total_area << endl;
+  cout << " t sweep is : " << total_area/(flux_total*dt) << endl;
 
   // Allocate Global memory
   alloc();
@@ -184,11 +179,13 @@ Prog::~Prog() {
   delete [] pressure;
   delete [] mobility_;
 
-  for (i=0; i<Nt; i++)
-    {
-      delete[] flux[i];
-    }
+  for (i=0; i<Nt; i++) {
+    delete[] flux[i];
+  }
   delete[] flux;
+  delete mesh_;
+  delete mixte_;
+  delete advect_;
 }
 
 

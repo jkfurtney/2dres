@@ -140,6 +140,9 @@ public:
   int segPROD;
   int segBORD;
   double total_area;
+  double injLength_; // length of all injector segments
+  double prodLength_;
+  double borderLength_;
 };
 
 
