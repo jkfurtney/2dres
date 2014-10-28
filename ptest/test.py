@@ -14,6 +14,7 @@ mesh_file = "/home/jkf/src/2dres/ptest/small_inlet.1.amdba"
 mesh_file = "/home/jkf/src/2dres/ptest/geo.1.amdba"
 mesh_file = "/home/jkf/src/2dres/test3.amdba"
 mesh_file = "/home/jkf/src/2dres/ptest/full.1.amdba"
+mesh_file = "/home/jkf/src/2dres/ptest/full_coarse.1.amdba"
 
 model = py2dres(mesh_file=mesh_file,
                 p0=0, u_in=u_in)
@@ -72,12 +73,12 @@ colorby = model.pressure()
 
 
 alpha = model.alpha()
-for i in range(100000):
+for i in range(100):
     model.update_a()
 print alpha.max(), alpha.min()
 
 coll = PolyCollection(verts,
-                      array=model.alpha(), linewidths=0,
+                      array=alpha, linewidths=0,
                       edgecolors='none')
 
 plt.gca().add_collection(coll)
@@ -85,3 +86,9 @@ plt.gca().autoscale_view()
 plt.gca().set_aspect(1.0)
 plt.gcf().colorbar(coll, ax=plt.gca())
 plt.show()
+
+# test that the flux is correct
+fl=model.flux().flatten()
+arr=fl.argsort()
+print fl[arr[-4:]].sum()*dt*100
+print (model.area()*alpha).sum()
