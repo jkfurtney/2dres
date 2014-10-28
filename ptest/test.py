@@ -20,6 +20,7 @@ model = py2dres(mesh_file=mesh_file,
                 p0=0, u_in=u_in)
 dt = 0.5*model.area().min()/u_in*4.0
 model.set_dt(dt)
+model.in_alpha(0.5)
 print "new timestep ", dt
 print model.triangle_count()
 mobility = model.mobility()

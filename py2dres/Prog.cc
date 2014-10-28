@@ -89,7 +89,6 @@ Prog::Prog(prog_arg prog_val) {
 
   nloop     = 4;
   limitgrad = 1; // We use MUSCL when =1
-  inject0_1 = 0; // We inject 0 into 1, inject0=1, used for debugging
 
   // Create mesh
   mesh_  = new Mesh(meshfile);
@@ -146,10 +145,6 @@ void Prog::alloc() {
 
   memset(alpha, 0, Nt*sizeof(double));
   memset(pressure, 0, Nt*sizeof(double));
-  if(inject0_1 == 1) { // 0 injected into 1, only for debugging
-    for (i=0; i<Nt; i++)
-      alpha[i]=1.0;
-  }
 }
 
 
@@ -230,7 +225,6 @@ void Prog::put_iteralph_arg(struct IterAlph::iteralph_arg *iteralph_val) {
   iteralph_val->segINJE   = segINJE;
   iteralph_val->nloop     = nloop;
   iteralph_val->limitgrad = limitgrad;
-  iteralph_val->inject0_1 = inject0_1;
   iteralph_val->area      = area;
   iteralph_val->T_edge    = T_edge;
   iteralph_val->Ihat      = Ihat;

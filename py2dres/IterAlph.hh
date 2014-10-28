@@ -41,7 +41,6 @@ public:
     int segINJE;
     int nloop;
     int limitgrad;
-    int inject0_1;
 
     // Data arrays
     double* area;
@@ -96,7 +95,6 @@ public:
   int segINJE;
   int nloop;
   int limitgrad;
-  int inject0_1;
 
   // Data arrays
   double* area;    // double[Nt] area of each triangle
@@ -129,7 +127,7 @@ public:
   double*   new_alpha;
   //! internaly used nonzero for first time step only.
   int test_first;
-
+  double inject_alpha_;
 };
 
 

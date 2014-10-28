@@ -44,7 +44,6 @@ IterAlph::IterAlph(struct iteralph_arg iteralph_val) {
   segINJE   = iteralph_val.segINJE;
   nloop     = iteralph_val.nloop;
   limitgrad = iteralph_val.limitgrad;
-  inject0_1 = iteralph_val.inject0_1;
   area      = iteralph_val.area;
   T_edge    = iteralph_val.T_edge;
   Ihat      = iteralph_val.Ihat;
@@ -53,7 +52,7 @@ IterAlph::IterAlph(struct iteralph_arg iteralph_val) {
   Coort     = iteralph_val.Coort;
   Coorp     = iteralph_val.Coorp;
   SumMass   = iteralph_val.SumMass;
-
+  inject_alpha_ = 1.0;
   alpha_flux = new double*[Nt];
   fnm2       = new double*[Nt];
   fnm1       = new double*[Nt];
@@ -250,7 +249,7 @@ void IterAlph::create_alphaflux(double** alpha, double** flux,
       if (Ref!=NORMAL && Ref!=LEAK) {
         if (Ref==INJECTOR) {
           // new fluid coming in from the injector
-          alpha_flux[l][seg]=(1.0-inject0_1)*fluxINJ;
+          alpha_flux[l][seg]=(inject_alpha_)*fluxINJ;
         }
         else if (Ref==PRODUCER) {
           // fluid leaving the system by the producer
@@ -270,8 +269,7 @@ void IterAlph::create_alphaflux(double** alpha, double** flux,
         }
         else {
           if (Ref==LEAK) {
-            // alpha = 0 should come through the fluid
-            alpha_flux[l][seg] = inject0_1*flux[l][seg];
+            // this should never happen
           }
           else {
             /* The flux goes in, we take the

@@ -104,8 +104,6 @@ public:
 
   //! not sure -- used in AdvectAlpha
   int nloop;
-  //! inject fluid 1 into fluid 2 (0 for debugging)
-  int inject0_1;
   //! used by AdvectAlpha for greater accuracy
   int limitgrad;
   //! number of time steps to skip between each visualization interval

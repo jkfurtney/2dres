@@ -94,6 +94,15 @@ static PyObject *set_dt(py2dres *self, PyObject *args)
   Py_RETURN_NONE;
 }
 
+static PyObject *in_alpha(py2dres *self, PyObject *args)
+{
+  double ina;
+  if (!PyArg_ParseTuple(args,"d", &ina)) return NULL;
+  self->prog->advect_->inject_alpha_ = ina;
+  Py_RETURN_NONE;
+}
+
+
 static PyMethodDef py2dres_methods[] = {
 
   {"triangle_count", (PyCFunction)py2dres_triangle_count, METH_NOARGS, "Return the number if triangles"},
@@ -109,6 +118,7 @@ static PyMethodDef py2dres_methods[] = {
   {"y", (PyCFunction)y, METH_NOARGS, "y coordinate of element centroids"},
   {"area", (PyCFunction)area, METH_NOARGS, "mesh element areas"},
   {"set_dt", (PyCFunction)set_dt, METH_VARARGS, "set timestep"},
+  {"in_alpha", (PyCFunction)in_alpha, METH_VARARGS, "set inflow alpha"},
   {NULL}  /* Sentinel */
 };
 
