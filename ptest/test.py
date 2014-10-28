@@ -3,15 +3,23 @@ import numpy as np
 import pylab as plt
 from matplotlib.collections import PolyCollection
 
-Q = 7.5e-3/2.0 # m^3/s
+Q = 7.5e-3 # m^3/s
 a = 1.68e-4
 u_in = Q/a  # m^2/s
 mu = 1.58e-4 # Pa s
 
 mobility_factor = a**2/mu/12.0
+
 mesh_file = "/home/jkf/src/2dres/ptest/small_inlet.1.amdba"
+mesh_file = "/home/jkf/src/2dres/ptest/geo.1.amdba"
+mesh_file = "/home/jkf/src/2dres/test3.amdba"
+mesh_file = "/home/jkf/src/2dres/ptest/full.1.amdba"
+
 model = py2dres(mesh_file=mesh_file,
                 p0=0, u_in=u_in)
+dt = 0.5*model.area().min()/u_in*4.0
+model.set_dt(dt)
+print "new timestep ", dt
 print model.triangle_count()
 mobility = model.mobility()
 assert mobility.shape == (model.triangle_count(),)
@@ -52,8 +60,24 @@ colorby = model.pressure()
 # plt.colorbar()
 # plt.show()
 
+# coll = PolyCollection(verts,
+#                       array=colorby, linewidths=0,
+#                       edgecolors='none')
+
+# plt.gca().add_collection(coll)
+# plt.gca().autoscale_view()
+# plt.gca().set_aspect(1.0)
+# plt.gcf().colorbar(coll, ax=plt.gca())
+# plt.show()
+
+
+alpha = model.alpha()
+for i in range(100000):
+    model.update_a()
+print alpha.max(), alpha.min()
+
 coll = PolyCollection(verts,
-                      array=colorby, linewidths=0,
+                      array=model.alpha(), linewidths=0,
                       edgecolors='none')
 
 plt.gca().add_collection(coll)

@@ -4,3 +4,6 @@ build/
 dist/
 py2dres.egg-info/
 *.pyc
+/ptest/full.1.poly
+/ptest/geo.1.node
+/ptest/geo.1.poly

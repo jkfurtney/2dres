@@ -72,7 +72,30 @@ static PyObject *x(py2dres *self, PyObject *){
   return PyArray_SimpleNew(1, dims, NPY_DOUBLE);
 }
 
+static PyObject *y(py2dres *self, PyObject *){
+  npy_intp dims[12];
+  dims[0] = self->prog->Nt;
+  return PyArray_SimpleNew(1, dims, NPY_DOUBLE);
+}
+
+static PyObject *area(py2dres *self, PyObject *){
+  npy_intp dims[12];
+  dims[0] = self->prog->Nt;
+  void *data = (void *)self->prog->mesh_->area;
+  return PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, data);
+}
+
+static PyObject *set_dt(py2dres *self, PyObject *args)
+{
+  double dt;
+  if (!PyArg_ParseTuple(args,"d", &dt)) return NULL;
+  self->prog->dt = dt;
+  self->prog->advect_->dt = dt;
+  Py_RETURN_NONE;
+}
+
 static PyMethodDef py2dres_methods[] = {
+
   {"triangle_count", (PyCFunction)py2dres_triangle_count, METH_NOARGS, "Return the number if triangles"},
   {"update_p", (PyCFunction)py2dres_update_p, METH_NOARGS, "update pressure solution"},
   {"update_a", (PyCFunction)py2dres_update_a, METH_NOARGS, "update advection"},
@@ -84,6 +107,8 @@ static PyMethodDef py2dres_methods[] = {
    "pressure on triangle edges (Nt,3)"},
   {"x", (PyCFunction)x, METH_NOARGS, "x coordinate of element centroids"},
   {"y", (PyCFunction)y, METH_NOARGS, "y coordinate of element centroids"},
+  {"area", (PyCFunction)area, METH_NOARGS, "mesh element areas"},
+  {"set_dt", (PyCFunction)set_dt, METH_VARARGS, "set timestep"},
   {NULL}  /* Sentinel */
 };
 

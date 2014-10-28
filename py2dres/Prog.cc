@@ -82,21 +82,14 @@ Prog::Prog(prog_arg prog_val) {
   result_prefix  = prog_val.result_prefix;
 
   cout << "Create Prog" << endl;
-  int debug = 1;
-  FILE* file;
-  int t=0;
-  int i=0;
 
   struct Mesh::mesh_data            mesh_val;
   struct MixHy::mixhy_arg          mixhy_val;
   struct IterAlph::iteralph_arg iteralph_val;
 
-  char newline;
-
   nloop     = 4;
   limitgrad = 1; // We use MUSCL when =1
   inject0_1 = 0; // We inject 0 into 1, inject0=1, used for debugging
-
 
   // Create mesh
   mesh_  = new Mesh(meshfile);
@@ -108,7 +101,8 @@ Prog::Prog(prog_arg prog_val) {
   double flux_total = u_in * mesh_->injLength_;
   flux_in = -u_in/mesh_->injLength_; // m/s
 
-  dt = 0.5 * nloop*hmin/u_in;
+  //dt = 0.5 * nloop*hmin/u_in;
+  dt=1e-5;
   cout << " timestep: " << dt << endl;
   cout << " total area of the mesh is: " << total_area << endl;
   cout << " t sweep is : " << total_area/(flux_total*dt) << endl;
@@ -137,7 +131,6 @@ void Prog::updateA() {
 
 
 void Prog::alloc() {
-  FILE* file;
   int i=0;
 
   alpha   = new double[Nt];
@@ -156,17 +149,6 @@ void Prog::alloc() {
   if(inject0_1 == 1) { // 0 injected into 1, only for debugging
     for (i=0; i<Nt; i++)
       alpha[i]=1.0;
-  }
-
-  if(init_alpha == 1) {
-    // a file alpha_out.mat is saved at each time step
-    // this should really be a file name that the user supplys
-    cout << "read alpha" << endl;
-    file = fopen("alpha_in.mat","r");
-    for (i=0; i<Nt; i++) {
-      fscanf(file, "%lf", &(alpha[i]));
-    }
-    fclose(file);
   }
 }
 
