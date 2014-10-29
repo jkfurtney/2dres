@@ -217,7 +217,6 @@ void Mesh::meshEdge() {
   //! tmp boolean
   int  find=0;
 
-  double delta=0.0;
   //! tmp variable
   double val=0.0;
   //! size of cx and cy arrays

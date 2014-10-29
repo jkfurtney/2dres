@@ -69,13 +69,45 @@ static PyObject *edge_pressure(py2dres *self, PyObject *){
 static PyObject *x(py2dres *self, PyObject *){
   npy_intp dims[12];
   dims[0] = self->prog->Nt;
-  return PyArray_SimpleNew(1, dims, NPY_DOUBLE);
+  PyArrayObject *array =  (PyArrayObject *)PyArray_SimpleNew(1,
+                                                             dims,
+                                                             NPY_DOUBLE);
+  if (!array) return NULL;
+
+  double *data = (double *)PyArray_DATA(array);
+  for (int i=0; i<dims[0]; i++)
+  {
+    int n0 = self->prog->Coort[3*i];
+    int n1 = self->prog->Coort[3*i + 1];
+    int n2 = self->prog->Coort[3*i + 2];
+
+    data[i] = (self->prog->Coorp[2*n0] +
+               self->prog->Coorp[2*n1] +
+               self->prog->Coorp[2*n2]) / 3.0;
+  }
+  return (PyObject *)array;
 }
 
 static PyObject *y(py2dres *self, PyObject *){
   npy_intp dims[12];
   dims[0] = self->prog->Nt;
-  return PyArray_SimpleNew(1, dims, NPY_DOUBLE);
+  PyArrayObject *array =  (PyArrayObject *)PyArray_SimpleNew(1,
+                                                             dims,
+                                                             NPY_DOUBLE);
+  if (!array) return NULL;
+
+  double *data = (double *)PyArray_DATA(array);
+  for (int i=0; i<dims[0]; i++)
+  {
+    int n0 = self->prog->Coort[3*i];
+    int n1 = self->prog->Coort[3*i + 1];
+    int n2 = self->prog->Coort[3*i + 2];
+
+    data[i] = (self->prog->Coorp[2*n0+1] +
+               self->prog->Coorp[2*n1+1] +
+               self->prog->Coorp[2*n2+1]) / 3.0;
+  }
+  return (PyObject *)array;
 }
 
 static PyObject *area(py2dres *self, PyObject *){
@@ -102,9 +134,18 @@ static PyObject *in_alpha(py2dres *self, PyObject *args)
   Py_RETURN_NONE;
 }
 
+static PyObject *set_flux(py2dres *self, PyObject *args)
+{
+  double flux;
+  if (!PyArg_ParseTuple(args,"d", &flux)) return NULL;
+  double new_flux = -flux / self->prog->mesh_->injLength_; // m/s
+  self->prog->flux_in = new_flux;
+  self->prog->mixte_->flux_in = new_flux;
+  self->prog->advect_->flux_in = new_flux;
+  Py_RETURN_NONE;
+}
 
 static PyMethodDef py2dres_methods[] = {
-
   {"triangle_count", (PyCFunction)py2dres_triangle_count, METH_NOARGS, "Return the number if triangles"},
   {"update_p", (PyCFunction)py2dres_update_p, METH_NOARGS, "update pressure solution"},
   {"update_a", (PyCFunction)py2dres_update_a, METH_NOARGS, "update advection"},
@@ -114,11 +155,13 @@ static PyMethodDef py2dres_methods[] = {
   {"flux", (PyCFunction)flux, METH_NOARGS, "flux on triangle edges (Nt,3)"},
   {"edge_pressure", (PyCFunction)edge_pressure, METH_NOARGS,
    "pressure on triangle edges (Nt,3)"},
-  {"x", (PyCFunction)x, METH_NOARGS, "x coordinate of element centroids"},
-  {"y", (PyCFunction)y, METH_NOARGS, "y coordinate of element centroids"},
-  {"area", (PyCFunction)area, METH_NOARGS, "mesh element areas"},
-  {"set_dt", (PyCFunction)set_dt, METH_VARARGS, "set timestep"},
-  {"in_alpha", (PyCFunction)in_alpha, METH_VARARGS, "set inflow alpha"},
+  {"x", (PyCFunction)x, METH_NOARGS, "x coordinate of element centroids [m]"},
+  {"y", (PyCFunction)y, METH_NOARGS, "y coordinate of element centroids [m]"},
+  {"area", (PyCFunction)area, METH_NOARGS, "mesh element areas [m^2]"},
+  {"set_dt", (PyCFunction)set_dt, METH_VARARGS, "set timestep [seconds]"},
+  {"in_alpha", (PyCFunction)in_alpha, METH_VARARGS, "set inflow alpha [] (between 0 and 1)"},
+  {"set_flux", (PyCFunction)set_flux, METH_VARARGS, "set total influx [m^2/s]"},
+
   {NULL}  /* Sentinel */
 };
 

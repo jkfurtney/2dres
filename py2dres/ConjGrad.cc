@@ -86,9 +86,7 @@ void  ConjGrad::init(int iN, int iNt, double itol, int** iCoort)
 
 int ConjGrad::solve(double*** A, double* b, int* mask, double* x)
 {
-  int       k=0;
   int       i=0;
-  int    node=0;
   int    loop=0;
   double alpha=0.0;
   double beta=0.0;

@@ -31,8 +31,8 @@ mobility *= mobility_factor
 assert (model.mobility()==mobility_factor).all()
 
 model.update_p()
-print "{:.4e}".format(model.pressure().max())
-print "{:.4e}".format(model.flux().flatten().max())
+print "max pressure {:.4e}".format(model.pressure().max())
+print "max segment flux {:.4e}".format(model.flux().flatten().max())
 
 def parse_amdba_file(filename):
     f = open(filename, "r")
@@ -76,20 +76,44 @@ colorby = model.pressure()
 alpha = model.alpha()
 for i in range(100):
     model.update_a()
-print alpha.max(), alpha.min()
+print "min,max alpha: ", alpha.max(), alpha.min()
 
-coll = PolyCollection(verts,
-                      array=alpha, linewidths=0,
-                      edgecolors='none')
+vis = False
+if vis:
+    coll = PolyCollection(verts,
+                          array=alpha, linewidths=0,
+                          edgecolors='none')
 
-plt.gca().add_collection(coll)
-plt.gca().autoscale_view()
-plt.gca().set_aspect(1.0)
-plt.gcf().colorbar(coll, ax=plt.gca())
-plt.show()
+    plt.gca().add_collection(coll)
+    plt.gca().autoscale_view()
+    plt.gca().set_aspect(1.0)
+    plt.gcf().colorbar(coll, ax=plt.gca())
+    plt.show()
 
 # test that the flux is correct
 fl=model.flux().flatten()
 arr=fl.argsort()
-print fl[arr[-4:]].sum()*dt*100
-print (model.area()*alpha).sum()
+flux_in0 = 0.5*fl[arr[-4:]].sum()*dt*100
+flux_in1 = (model.area()*alpha).sum()
+
+def tol(a,b,rel):
+    print a, b, abs(a-b)
+    assert abs(a-b)/max(a,b) < rel
+
+tol(flux_in0, flux_in1, 0.01)
+xarr = model.x()
+assert type(xarr) is np.ndarray
+assert xarr.shape == (model.triangle_count(),)
+
+old_flux = fl[arr[-4:]].sum()
+old_pressure = model.pressure().max()
+model.set_flux(u_in/2.0)
+model.update_p()
+
+fl=model.flux().flatten()
+arr=fl.argsort()
+new_flux = fl[arr[-4:]].sum()
+new_pressure = model.pressure().max()
+
+tol( old_flux, 2*new_flux, 0.01)
+tol( old_pressure, 2*new_pressure, 0.01)
