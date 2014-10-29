@@ -145,6 +145,13 @@ static PyObject *set_flux(py2dres *self, PyObject *args)
   Py_RETURN_NONE;
 }
 
+
+static PyObject *mesh_filename(py2dres *self, PyObject *)
+{
+  CHECK_SELF;
+  return PyString_FromString(self->prog->meshfile);
+}
+
 static PyMethodDef py2dres_methods[] = {
   {"triangle_count", (PyCFunction)py2dres_triangle_count, METH_NOARGS, "Return the number if triangles"},
   {"update_p", (PyCFunction)py2dres_update_p, METH_NOARGS, "update pressure solution"},
@@ -161,7 +168,7 @@ static PyMethodDef py2dres_methods[] = {
   {"set_dt", (PyCFunction)set_dt, METH_VARARGS, "set timestep [seconds]"},
   {"in_alpha", (PyCFunction)in_alpha, METH_VARARGS, "set inflow alpha [] (between 0 and 1)"},
   {"set_flux", (PyCFunction)set_flux, METH_VARARGS, "set total influx [m^2/s]"},
-
+  {"mesh_filename", (PyCFunction)mesh_filename, METH_NOARGS, "return mesh filename"},
   {NULL}  /* Sentinel */
 };
 
