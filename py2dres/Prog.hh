@@ -69,6 +69,7 @@ public:
   // python interface to solver
   void updateP();
   void updateA();
+  double produced_alpha();
 
 public:
 

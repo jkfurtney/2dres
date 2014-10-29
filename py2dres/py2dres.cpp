@@ -58,6 +58,23 @@ static PyObject *flux(py2dres *self, PyObject *){
   return PyArray_SimpleNewFromData(2, dims, NPY_DOUBLE, data);
 }
 
+static PyObject *node_xy(py2dres *self, PyObject *){
+  npy_intp dims[12];
+  dims[0] = self->prog->Np;
+  dims[1] = 2;
+  void *data = (void *)self->prog->Coorp;
+  return PyArray_SimpleNewFromData(2, dims, NPY_DOUBLE, data);
+}
+
+static PyObject *element_nodes(py2dres *self, PyObject *){
+  npy_intp dims[12];
+  dims[0] = self->prog->Nt;
+  dims[1] = 3;
+  void *data = (void *)self->prog->Coort;
+  return PyArray_SimpleNewFromData(2, dims, NPY_INT, data);
+}
+
+
 static PyObject *edge_pressure(py2dres *self, PyObject *){
   npy_intp dims[12];
   dims[0] = self->prog->Nt;
@@ -145,6 +162,10 @@ static PyObject *set_flux(py2dres *self, PyObject *args)
   Py_RETURN_NONE;
 }
 
+static PyObject *produced_alpha(py2dres *self, PyObject *)
+{
+  return PyFloat_FromDouble(self->prog->produced_alpha());
+}
 
 static PyObject *mesh_filename(py2dres *self, PyObject *)
 {
@@ -164,11 +185,14 @@ static PyMethodDef py2dres_methods[] = {
    "pressure on triangle edges (Nt,3)"},
   {"x", (PyCFunction)x, METH_NOARGS, "x coordinate of element centroids [m]"},
   {"y", (PyCFunction)y, METH_NOARGS, "y coordinate of element centroids [m]"},
+  {"node_xy",(PyCFunction)node_xy, METH_NOARGS, "Node xy coords (n,2)"},
+  {"element_nodes", (PyCFunction)element_nodes, METH_NOARGS, "(nt,3) of element nodes"},
   {"area", (PyCFunction)area, METH_NOARGS, "mesh element areas [m^2]"},
   {"set_dt", (PyCFunction)set_dt, METH_VARARGS, "set timestep [seconds]"},
   {"in_alpha", (PyCFunction)in_alpha, METH_VARARGS, "set inflow alpha [] (between 0 and 1)"},
   {"set_flux", (PyCFunction)set_flux, METH_VARARGS, "set total influx [m^2/s]"},
   {"mesh_filename", (PyCFunction)mesh_filename, METH_NOARGS, "return mesh filename"},
+  {"produced_alpha", (PyCFunction)produced_alpha, METH_NOARGS, "return the alpha value currently being produced"},
   {NULL}  /* Sentinel */
 };
 

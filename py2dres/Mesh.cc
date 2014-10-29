@@ -65,7 +65,6 @@ Mesh::Mesh(char* meshfile) {
   FILE* fd;
   int i, j;
 
-  cout << "Init Class Mesh" << endl;
 
   Np=0;
   Nt=0;
@@ -102,7 +101,7 @@ Mesh::Mesh(char* meshfile) {
   }
   fscanf(fd, "%i %i", &Np, &Nt);
   Ne=0;
-  printf("This mesh has: %i nodes and %i triangles.\n", Np, Nt);
+  //printf("This mesh has: %i nodes and %i triangles.\n", Np, Nt);
 
 
   /* **************** Allocate memory ***********************/
@@ -144,27 +143,27 @@ Mesh::Mesh(char* meshfile) {
   /* ************* Read data from the mesh file **************/
   meshRead(fd);
   fclose(fd);
-  cout << "meshRead OK" << endl;
+  //  cout << "meshRead OK" << endl;
 
   /* ***** Compute and allocate for the segments *******/
   meshEdge();
-  cout << "meshEdge OK Ne=" << Ne << endl;
-  cout << "segINJE=" << segINJE
-       << " segPROD=" << segPROD
-       << " segBORD=" << segBORD<< endl;
+  // cout << "meshEdge OK Ne=" << Ne << endl;
+  // cout << "segINJE=" << segINJE
+  //      << " segPROD=" << segPROD
+  //      << " segBORD=" << segBORD<< endl;
 
-  cout << "total length of injector edges " << injLength_ << endl;
-  cout << "total length of producer edges " << prodLength_ << endl;
-  cout << "total length of boundary edges " << borderLength_ << endl;
+  // cout << "total length of injector edges " << injLength_ << endl;
+  // cout << "total length of producer edges " << prodLength_ << endl;
+  // cout << "total length of boundary edges " << borderLength_ << endl;
 
   /* ***** Compute the matrixes used in the computation *******/
   meshCompute();
-  cout << "meshCompute OK" << endl;
+  //cout << "meshCompute OK" << endl;
 }
 
 Mesh::~Mesh() {
   int i, j;
-  cout << "Destructor Mesh" << endl;
+  //cout << "Destructor Mesh" << endl;
   delete[] Refp;
   delete[] Coort;
   delete[] Coorp;
@@ -269,7 +268,7 @@ void Mesh::meshEdge() {
 
   hmin=sqrt(hmin);
   hmax=sqrt(hmax);
-  printf("min(dx)=%g max(dx)=%g\n",hmin,hmax);
+  //printf("min(dx)=%g max(dx)=%g\n",hmin,hmax);
 
   /* ****** Set the Edges ******/
   Ne=0;

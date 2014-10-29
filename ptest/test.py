@@ -117,3 +117,11 @@ new_pressure = model.pressure().max()
 
 tol( old_flux, 2*new_flux, 0.01)
 tol( old_pressure, 2*new_pressure, 0.01)
+
+ele = model.element_nodes()
+n0,n1,n2 = ele[0]
+n = model.node_xy()
+x0 = (n[n0,0] + n[n1,0] + n[n2,0])/3.0
+y0 = (n[n0,1] + n[n1,1] + n[n2,1])/3.0
+assert x0 == model.x()[0]
+assert y0 == model.y()[0]

@@ -31,8 +31,6 @@ MixHy::MixHy(struct mixhy_arg mixhy_val) : cg() {
   int i=0;
   int j=0;
 
-  cout << "Init class Mixed Hybrid" << endl;
-
   // Initialisation of the values
   Nt      = mixhy_val.Nt;
   Ne      = mixhy_val.Ne;
@@ -92,7 +90,6 @@ MixHy::MixHy(struct mixhy_arg mixhy_val) : cg() {
 
 MixHy::~MixHy() {
   int i,j;
-  cout << "Destructor MixHy" << endl;
 
   for (i=0; i<Nt; i++){
       for (j=0; j<3; j++){
@@ -207,10 +204,10 @@ void MixHy::compute_flux(double* alpha, double** g, double* tpress, double** flu
            << flux[l][0]+flux[l][1]+flux[l][2] << endl;
     }
   }
-  cout << "Integration Inj=" << int_inje
-       << " Prod="           << int_prod
-       << " Leak="           << int_leak
-       << " relative=" << (int_inje+int_prod+int_leak)/int_inje << endl;
+  // cout << "Integration Inj=" << int_inje
+  //      << " Prod="           << int_prod
+  //      << " Leak="           << int_leak
+  //      << " relative=" << (int_inje+int_prod+int_leak)/int_inje << endl;
 
   if (production_log){
     // write out the cumulative volumes. this shoule be done

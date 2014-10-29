@@ -65,14 +65,13 @@ public:
 
   ConjGrad()
   {
-    cout << "Class Conjugate Gradient" << endl;
+
   }
 
   ~ConjGrad()
   {
     int i;
 
-    cout << "Destructor ConjGrad" << endl;
     delete[] r;
     delete[] w;
     delete[] Aw;

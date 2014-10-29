@@ -81,7 +81,7 @@ Prog::Prog(prog_arg prog_val) {
   production_log = prog_val.production_log;
   result_prefix  = prog_val.result_prefix;
 
-  cout << "Create Prog" << endl;
+
 
   struct Mesh::mesh_data            mesh_val;
   struct MixHy::mixhy_arg          mixhy_val;
@@ -102,9 +102,6 @@ Prog::Prog(prog_arg prog_val) {
 
   //dt = 0.5 * nloop*hmin/u_in;
   dt=1e-5;
-  cout << " timestep: " << dt << endl;
-  cout << " total area of the mesh is: " << total_area << endl;
-  cout << " t sweep is : " << total_area/(flux_total*dt) << endl;
 
   // Allocate Global memory
   alloc();
@@ -128,6 +125,24 @@ void Prog::updateA() {
   advect_->iteration_alpha(flux, alpha);
 }
 
+double Prog::produced_alpha()
+{
+  //this is the value of alpha currently being produced
+  double alpha_sum=0;
+  double flux_sum=0;
+  for (int i=0; i<Nt; i++)
+  {
+    for (int j=0; j<3; j++)
+    {
+      if (T_edge[i][j]->Ref==PRODUCER)
+      {
+        flux_sum += flux[i][j];
+        alpha_sum += flux[i][j] * alpha[i];
+      }
+    }
+  }
+  return alpha_sum/flux_sum;
+}
 
 void Prog::alloc() {
   int i=0;
@@ -151,7 +166,6 @@ void Prog::alloc() {
 Prog::~Prog() {
   int i=0;
 
-  cout << "Destructor Prog" << endl;
   delete [] alpha;
   delete [] pressure;
   delete [] mobility_;

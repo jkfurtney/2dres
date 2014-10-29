@@ -35,7 +35,7 @@ using namespace std;
 IterAlph::IterAlph(struct iteralph_arg iteralph_val) {
   int i=0;
 
-  cout << "Init class Advection of alpha" << endl;
+  //cout << "Init class Advection of alpha" << endl;
 
   Nt        = iteralph_val.Nt;
   Np        = iteralph_val.Np;
@@ -79,7 +79,6 @@ IterAlph::IterAlph(struct iteralph_arg iteralph_val) {
 IterAlph::~IterAlph() {
   int i=0;
 
-  cout << "Destructor IterAlph" << endl;
   for (i=0; i<Nt; i++) {
       delete[] alpha_flux[i];
       delete[] fnm2[i];
